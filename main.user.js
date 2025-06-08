@@ -15,6 +15,7 @@
     const wordsToRemove = ['asazfzefze', 'gdfgergerge'];
 
     const wordsLower = wordsToRemove.map(w => w.toLowerCase());
+    // Create regex without word boundaries for patterns with special chars, with word boundaries for simple words
     const escapedPatterns = wordsToRemove.map(w => {
         const escaped = w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         // Add word boundaries only for simple alphanumeric words
@@ -30,39 +31,19 @@
 
     function normalizeText(text) {
         if (typeof text !== 'string') return '';
-        let tempDiv;
-        try {
-            if (typeof document !== 'undefined' && document.createElement) {
-                tempDiv = document.createElement('div');
-            }
-        } catch (e) {
-            // Fallback if tempDiv creation fails (e.g. very early script execution)
-            let decodedText = text;
-            return decodedText
-                .replace(/\u00A0/g, ' ')
-                .replace(/ /g, ' ')
-                .replace(/\s+/g, ' ')
-                .trim()
-                .toLowerCase();
-        }
 
-        if (tempDiv) {
-            tempDiv.innerHTML = text;
-            let decodedText = tempDiv.textContent || tempDiv.innerText || '';
-            return decodedText
-                .replace(/\u00A0/g, ' ')
-                .replace(/ /g, ' ')
-                .replace(/\s+/g, ' ')
-                .trim()
-                .toLowerCase();
-        } else { // Should not happen if document.createElement succeeded or failed gracefully
-            return text
-                .replace(/\u00A0/g, ' ')
-                .replace(/ /g, ' ')
-                .replace(/\s+/g, ' ')
-                .trim()
-                .toLowerCase();
-        }
+        return text
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#39;/g, "'")
+            .replace(/&nbsp;/g, ' ')
+            .replace(/\u00A0/g, ' ')
+            .replace(/ /g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .toLowerCase();
     }
 
     function containsAnyWord(text) {
@@ -89,6 +70,7 @@
     }
 
     function processText(node) {
+        console.log('Processing text node:', node.textContent);
         if (!node.textContent) return;
         const original = node.textContent;
 
