@@ -3,7 +3,7 @@
 // @namespace    http://tampermonkey.net/
 // @version      1.0
 // @description  Removes specific words on all websites
-// @author       You
+// @author       BadisG
 // @match        *://*/*
 // @grant        none
 // @run-at       document-start
