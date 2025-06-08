@@ -1,4 +1,4 @@
-# Better-Youtube-Recomendation-Algorithm
+# Hide-words-on-all-websites
 Removes specific words on all websites
 
 # What does it do?
