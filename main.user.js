@@ -113,15 +113,30 @@
                 newText = newText.replace(/^\s+/, '');
             }
 
-            /* –– the rest is unchanged –– */
+            // Handle sentence capitalization
             newText = newText.replace(/([.!?]\s+)([a-z])/g,
                                       (_, p1, p2) => p1 + p2.toUpperCase());
             if (newText && /^[a-z]/.test(newText)) {
                 newText = newText.charAt(0).toUpperCase() + newText.slice(1);
             }
 
+            // Fix punctuation spacing - but preserve email addresses and other special cases
             newText = newText.replace(/\s+([,.!?;:])/g, '$1');
-            newText = newText.replace(/([,.!?;:])(?=\S)/g, '$1 ');
+
+            // Add space after punctuation, but avoid breaking email addresses
+            // Don't add space if punctuation is followed by @ or if it's part of an email pattern
+            newText = newText.replace(/([,.!?;:])(?=\S)(?!@)/g, (match, punct, offset, string) => {
+                // Check if this might be part of an email address
+                const beforeContext = string.substring(Math.max(0, offset - 10), offset);
+                const afterContext = string.substring(offset + 1, Math.min(string.length, offset + 11));
+
+                // If it looks like an email pattern, don't add space
+                if (/[a-zA-Z0-9]$/.test(beforeContext) && /^[a-zA-Z0-9@.]/.test(afterContext)) {
+                    return punct;
+                }
+
+                return punct + ' ';
+            });
 
             if (original !== newText) node.textContent = newText;
         }
