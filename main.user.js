@@ -70,7 +70,6 @@
     }
 
     function processText(node) {
-        console.log('Processing text node:', node.textContent);
         if (!node.textContent) return;
         const original = node.textContent;
 
