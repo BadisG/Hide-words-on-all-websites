@@ -17,7 +17,7 @@
     // Set to true to see detailed logs in the developer console
     // Set to false for normal, silent operation
     // ===================================================================
-    const DEBUG_MODE = true;
+    const DEBUG_MODE = false;
 
     const wordsToRemove = ['aaaa', 'bbbb'];
 
