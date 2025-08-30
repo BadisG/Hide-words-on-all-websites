@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Hide Words On All Websites (Debug Version)
+// @name         Hide Words On All Websites
 // @namespace    http://tampermonkey.net/
 // @version      1.0
 // @description  Removes specific words on all websites
