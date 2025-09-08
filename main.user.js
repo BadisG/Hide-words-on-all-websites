@@ -23,21 +23,17 @@
 
     const wordsLower = wordsToRemove.map(w => w.toLowerCase());
 
-    // Sort words by length descending to match longer sequences first
-    const sortedWords = wordsToRemove.sort((a, b) => b.length - a.length);
-
     // Better regex construction that handles ZWJ sequences properly
+    const normalizedWords = wordsToRemove.map(w => normalizeEmojis(w));
+    const sortedWords = normalizedWords.sort((a, b) => b.length - a.length);
+
     const escapedPatterns = sortedWords.map(w => {
-        // Escape special regex characters
         let escaped = w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-        // For emoji sequences, be more specific about ZWJ handling
-        if (w.includes('\u200D')) { // Contains ZWJ (Zero Width Joiner)
-            // Make the pattern more specific to avoid partial matches
+        if (w.includes('\u200D')) {
             escaped = escaped.replace(/\\u200D/g, '\u200D');
         }
 
-        // Add word boundaries only for patterns that start and end with word characters
         if (/^\w/.test(w) && /\w$/.test(w)) {
             return '\\b' + escaped + '\\b';
         }
@@ -50,6 +46,11 @@
 
     // Performance optimization: Cache processed elements
     const processedElements = new WeakSet();
+
+    function normalizeEmojis(text) {
+        if (typeof text !== 'string') return '';
+        return text.replace(/\uFE0F/g, '');
+    }
 
     function normalizeText(text) {
         if (typeof text !== 'string') return '';
@@ -69,8 +70,9 @@
     }
 
     function containsAnyWord(text) {
-        const normalizedText = text.toLowerCase();
-        return wordsLower.some(word => normalizedText.includes(word));
+        const normalizedText = normalizeEmojis(text.toLowerCase());
+        const normalizedWords = wordsLower.map(word => normalizeEmojis(word));
+        return normalizedWords.some(word => normalizedText.includes(word));
     }
 
     function getCleanTextContent(el) {
@@ -93,7 +95,7 @@
 
     function processText(node) {
         if (!node.textContent) return;
-        const original = node.textContent;
+        const original = normalizeEmojis(node.textContent);
 
         // Reset regex state before testing
         regex.lastIndex = 0;
